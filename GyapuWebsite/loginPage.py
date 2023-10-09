@@ -12,46 +12,48 @@ class BaseTest:
         self.driver.get("https://www.gyapu.com/")
 
     def teardown(self):
-        time.sleep(5)  # Sleep for 5 seconds
+        # time.sleep(5)  # Sleep for 5 seconds
         self.driver.quit()
 
 
-class Test_login(BaseTest):
+class Testlogin(BaseTest):
     def test_login(self):
         try:
-            # Wait for the "Login/Register" button to be clickable
+            wait = WebDriverWait(self.driver, 30) #configure the wait time here. no need to set it everytime
+        # Wait for the "Login/Register" button to be clickable
             login_btn_xpath = "//div[@class='my-auto pb-1']//button[contains(text(),'Login/Register')]"
-            login_btn = WebDriverWait(self.driver, 10).until(
+            login_btn = wait.until(
                 EC.element_to_be_clickable((By.XPATH, login_btn_xpath))
             )
             login_btn.click()
 
-            time.sleep(2)
 
             # Find the input fields for username/email and password
             username_input_xpath = "//input[@id='username']"
             password_input_xpath = "//input[@id='Password']"
-            username_input = WebDriverWait(self.driver, 10).until(
+            username_input = wait.until(
                 EC.presence_of_element_located((By.XPATH, username_input_xpath))
             )
-            password_input = WebDriverWait(self.driver, 10).until(
+            password_input = wait.until(
                 EC.presence_of_element_located((By.XPATH, password_input_xpath))
             )
 
             # Enter the login credentials
             username_input.send_keys("kulchan.pema@gmail.com")
             password_input.send_keys("Pema123")
+            # time.sleep(10)
 
             # Find and click the login button
-            login_button_xpath = "//button[contains(text(), 'Login')]"
-            login_button = WebDriverWait(self.driver, 10).until(
-                EC.element_to_be_clickable((By.XPATH, login_button_xpath))
-            )
-            login_button.click()
+            # login_button_xpath = "//button[contains(text(), 'Login')]" #xpath format needs changing. used the correct xpath in the lines below
+            login=wait.until(EC.element_to_be_clickable((By.XPATH, "//button[text()='Login']"))) #you can remove the login= and just apply a wait here
+
+            # login = self.driver.find_element_by_xpath("//button[text()='Login']") #better to use this while looking for an element to be interacted with
+            login.click()
 
             # Wait for an element on the homepage to ensure the page has loaded
-            homepage_element_xpath = "//a[contains(text(), 'Categories')]"
-            WebDriverWait(self.driver, 10).until(
+            # homepage_element_xpath = "//a[contains(text(), 'Categories')]" #this xpath not found
+            homepage_element_xpath='//div[@class="categories container mx-auto"]' #waits until the bar with the categories is visible
+            wait.until(
                 EC.presence_of_element_located((By.XPATH, homepage_element_xpath))
             )
 
@@ -67,7 +69,7 @@ class Test_login(BaseTest):
 
 
 if __name__ == "__main__":
-    test = Test_login()
+    test = Testlogin()
     test.setup()
     test.test_login()
     test.teardown()
